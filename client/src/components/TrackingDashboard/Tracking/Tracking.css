@@ -1,0 +1,27 @@
+.tracking-img {
+  width: 200px;
+  width: 200px;
+}
+
+.tracking-dashboard-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.tracking-helper-text {
+  margin-top: 8px;
+  margin-bottom: 1rem;
+  font-size: 12px;
+  font-family: rajdhani;
+  font-weight: bold;
+}
+
+.being-tracked-text {
+  font-size: 20px;
+  font-family: rajdhani;
+  font-weight: bold;
+}

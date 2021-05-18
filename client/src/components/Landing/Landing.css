@@ -1,0 +1,28 @@
+.login-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.login-container-title {
+  font-size: 40px;
+}
+
+.signup-container-title {
+  font-size: 40px;
+  margin-bottom: 0px;
+}
+
+.signup-container-subtext {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  margin-top: 0;
+}
+
+.login-container-forgot {
+  font-size: 13px;
+  font-weight: 600;
+}
