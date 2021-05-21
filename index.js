@@ -18,10 +18,13 @@ const server = http.createServer(app);
 app.use(bodyParser.json());
 app.use(cors());
 
-MongoClient.connect("mongodb://localhost:27017/wollof", {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-})
+MongoClient.connect(
+  "mongodb+srv://WeTrack:taranicole@wetrackcluster.gboms.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  }
+)
   .then(() => console.log("Database connection successful"))
   .catch((err) => console.error("Error while connecting to database:", err));
 

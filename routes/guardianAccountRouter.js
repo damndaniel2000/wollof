@@ -6,7 +6,7 @@ const GuardianAccount = require("../models/GuardianAccount");
 const guardianRouter = express.Router();
 
 guardianRouter.route("/signup").post((req, res, next) => {
-  GuardianAccount.create(data)
+  GuardianAccount.create(req.body)
     .then((response) => {
       res.json(response);
     })

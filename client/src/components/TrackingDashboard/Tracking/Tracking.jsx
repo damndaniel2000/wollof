@@ -133,7 +133,7 @@ const Tracking = () => {
     );
     if (containsPlace === false) {
       Axios.post("/api/messages", {
-        to: "+919930892362",
+        to: "+9187794622",
         body: "Stop STRESSING SO MUCH",
       });
     }
