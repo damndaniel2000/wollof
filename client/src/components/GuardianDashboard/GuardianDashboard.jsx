@@ -16,17 +16,12 @@ import {
 import { useHistory, useLocation } from "react-router";
 import Axios from "axios";
 
-import "./TrackingAccount.css";
-
 import MenuIcon from "@material-ui/icons/Menu";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
-import Dashboard from "./Tracking/Tracking";
-import Requests from "./Requests/Requests";
-import Guardians from "./Guardians/Guardians";
-
-import tracking from "../../images/delivery.svg";
+import Search from "./Search/Search";
+import Dashboard from "./Dashboard/Dashboard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,12 +40,12 @@ const drawers = [
   {
     label: "Dashboard",
     icon: <MailIcon />,
-    link: "/tracking?page=dashboard",
+    link: "/guardian?page=dashboard",
   },
   {
-    label: "Requests",
+    label: "Search",
     icon: <MailIcon />,
-    link: "/tracking?page=requests",
+    link: "/guardian?page=search",
   },
   {
     label: "Guardians",
@@ -78,7 +73,7 @@ const TrackingDashboard = () => {
 
   React.useEffect(() => {
     Axios.get(
-      "/api/trackingAccount/getAccountDetails?email=" +
+      "/api/guardianAccount/getAccountDetails?email=" +
         localStorage.getItem("wollof-auth")
     )
       .then((res) => setUser(res.data))
@@ -96,7 +91,7 @@ const TrackingDashboard = () => {
     setDrawerOpen(open);
   };
 
-  const list = () => (
+  const list = (anchor) => (
     <div>
       <List>
         {drawers.map((item) => (
@@ -137,9 +132,8 @@ const TrackingDashboard = () => {
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         {list()}
       </Drawer>
+      {page === "search" && <Search details={user} />}
       {page === "dashboard" && <Dashboard details={user} />}
-      {page === "requests" && <Requests details={user} />}
-      {page === "guardians" && <Guardians />}
     </>
   );
 };

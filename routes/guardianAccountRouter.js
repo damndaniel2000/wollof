@@ -27,19 +27,15 @@ guardianRouter.route("/login").post((req, res, next) => {
     .catch((err) => console.log(err));
 });
 
-guardianRouter.route("/requestAccepted").post((req, res, next) => {
-  GuardianAccount.findOne({ email: req.body.emailId })
-    .then((data) => {
-      const arr = data.trackingList;
-      arr.push(req.body.newTrackingAccount);
-      GuardianAccount.updateOne(
-        { email: req.body.emailId },
-        { $set: { trackingList: arr } }
-      )
-        .then((data) => res.json(data.trackingList))
-        .catch((err) => next(err));
-    })
+guardianRouter.route("/getAccountDetails").get((req, res, next) => {
+  GuardianAccount.findOne({ email: req.query.email })
+    .then((data) => res.json(data))
     .catch((err) => next(err));
 });
 
+guardianRouter.route("/getTrackingList").get((req, res, next) => {
+  GuardianAccount.findOne({ email: req.query.email })
+    .then((data) => res.json(data.trackingList))
+    .catch((err) => next(err));
+});
 module.exports = guardianRouter;

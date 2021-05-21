@@ -73,7 +73,7 @@ const Login = () => {
     <div className="login-container">
       <p className="login-container-title">
         Welcome Back,{" "}
-        <span style={{ fontWeight: 700, color: "#061178" }}>Nicole</span>
+        <span style={{ fontWeight: 700, color: "#061178" }}>User</span>
       </p>
       <FormControl className={classes.input}>
         <InputLabel>Type of Account</InputLabel>

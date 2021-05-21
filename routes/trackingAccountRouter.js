@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const randomstring = require("randomstring");
 
 const TrackingAccount = require("../models/TrackingAccount");
+const GuardianAccount = require("../models/GuardianAccount");
 
 const trackingRouter = express.Router();
 
@@ -28,6 +29,12 @@ trackingRouter.route("/login").post((req, res, next) => {
       else res.sendStatus(403);
     })
     .catch((err) => console.log(err));
+});
+
+trackingRouter.route("/getAccountDetails").get((req, res, next) => {
+  TrackingAccount.findOne({ email: req.query.email })
+    .then((data) => res.json(data))
+    .catch((err) => next(err));
 });
 
 trackingRouter.route("/searchAccount").post((req, res, next) => {
@@ -61,7 +68,6 @@ trackingRouter.route("/rejectTrackingRequest").post((req, res, next) => {
   TrackingAccount.findOne({ uniqueId: req.body.uniqueId })
     .then((data) => {
       const requests = data.trackingRequests;
-      console.log(data, requests);
       const removeRequest = requests.filter((item) => {
         if (item !== null) return item["email"] !== req.body.request.email;
       });
@@ -81,6 +87,12 @@ trackingRouter.route("/rejectTrackingRequest").post((req, res, next) => {
 });
 
 trackingRouter.route("/acceptTrackingRequest").post((req, res, next) => {
+  let trackingList = [];
+  GuardianAccount.findOne({ email: req.body.request.email })
+    .then((data) => {
+      trackingList = data.trackingList;
+    })
+    .catch((err) => next(err));
   TrackingAccount.findOne({ uniqueId: req.body.uniqueId })
     .then((data) => {
       const requests = data.trackingRequests;
@@ -89,6 +101,11 @@ trackingRouter.route("/acceptTrackingRequest").post((req, res, next) => {
       list.push(req.body.request);
       const filtereredArray = requests.filter((item) => {
         if (item !== null) return item["email"] !== req.body.request.email;
+      });
+      trackingList.push({
+        email: data.email,
+        trackingId: data.trackingId,
+        name: data.name,
       });
 
       TrackingAccount.updateOne(
@@ -102,14 +119,26 @@ trackingRouter.route("/acceptTrackingRequest").post((req, res, next) => {
           });
         })
         .catch((err) => next(err));
+      GuardianAccount.updateOne(
+        { email: req.body.request.email },
+        { $set: { trackingList: trackingList } }
+      )
+        .then((updateData) => res.json(updateData))
+        .catch((err) => next(err));
     })
+    .catch((err) => next(err));
+});
+
+trackingRouter.route("/getGuardianList").get((req, res, next) => {
+  TrackingAccount.findOne({ email: req.query.email })
+    .then((data) => res.json(data.guardianList))
     .catch((err) => next(err));
 });
 
 trackingRouter
   .route("/currentLocation")
   .get((req, res, next) => {
-    TrackingAccount.findOne({ email: req.query.email })
+    TrackingAccount.findOne({ trackingId: req.query.trackingId })
       .then((data) => res.json({ coords: data.currentLocation }))
       .catch((err) => next(err));
   })
@@ -125,7 +154,7 @@ trackingRouter
 trackingRouter
   .route("/currentGeoFence")
   .get((req, res, next) => {
-    TrackingAccount.findOne({ email: req.query.email })
+    TrackingAccount.findOne({ trackingId: req.query.trackingId })
       .then((data) => res.json({ geofence: data.currentGeoFence }))
       .catch((err) => next(err));
   })

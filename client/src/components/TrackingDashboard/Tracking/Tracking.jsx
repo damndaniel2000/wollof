@@ -106,6 +106,10 @@ const Tracking = () => {
     }
     setGeofence(polygonCoordsArray);
     setSubprocess("fenceMade");
+    Axios.put("/api/trackingAccount/currentGeoFence", {
+      email: localStorage.getItem("wollof-auth"),
+      geofence: polygonCoordsArray,
+    });
   };
 
   const stopTracking = (polygon) => {
@@ -118,6 +122,10 @@ const Tracking = () => {
     const fence = new window.google.maps.Polygon({
       paths: geofence,
     });
+    Axios.put("/api/trackingAccount/currentLocation", {
+      email: localStorage.getItem("wollof-auth"),
+      currentLocation: e.latLng,
+    });
 
     const containsPlace = window.google.maps.geometry.poly.containsLocation(
       e.latLng,
@@ -125,7 +133,7 @@ const Tracking = () => {
     );
     if (containsPlace === false) {
       Axios.post("/api/messages", {
-        to: "+918779460422",
+        to: "+919930892362",
         body: "Stop STRESSING SO MUCH",
       });
     }
