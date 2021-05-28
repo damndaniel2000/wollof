@@ -5,23 +5,28 @@ import {
   makeStyles,
   Typography,
   IconButton,
-  Button,
   List,
   ListItem,
   Drawer,
-  Divider,
   ListItemIcon,
   ListItemText,
+  useTheme,
+  Snackbar,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import { useHistory, useLocation } from "react-router";
 import Axios from "axios";
 
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import SearchIcon from "@material-ui/icons/Search";
+import ExitToAppOutlinedIcon from "@material-ui/icons/ExitToAppOutlined";
+import BookmarksOutlinedIcon from "@material-ui/icons/BookmarksOutlined";
 import MenuIcon from "@material-ui/icons/Menu";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 
 import Search from "./Search/Search";
 import Dashboard from "./Dashboard/Dashboard";
+
+import tracking from "../../images/delivery.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,27 +39,32 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     textTransform: "capitalize",
   },
+  drawerWidth: {
+    width: "60vw",
+  },
+  listItem: {
+    fontFamily: "rajdhani",
+    fontWeight: 600,
+  },
+  listItemActive: {
+    color: theme.palette.common.blue,
+  },
 }));
 
 const drawers = [
   {
     label: "Dashboard",
-    icon: <MailIcon />,
+    icon: <DashboardIcon />,
     link: "/guardian?page=dashboard",
   },
   {
     label: "Search",
-    icon: <MailIcon />,
+    icon: <SearchIcon />,
     link: "/guardian?page=search",
   },
   {
-    label: "Guardians",
-    icon: <MailIcon />,
-    link: "/tracking?page=guardians",
-  },
-  {
     label: "Logout",
-    icon: <MailIcon />,
+    icon: <ExitToAppOutlinedIcon />,
     link: "/",
   },
 ];
@@ -66,16 +76,20 @@ function useQuery() {
 const TrackingDashboard = () => {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
   const page = useQuery().get("page");
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
 
+  const [notification, setNotification] = React.useState({
+    show: false,
+  });
+
+  const handleNotificationClose = () => setNotification({ show: false });
+
   React.useEffect(() => {
-    Axios.get(
-      "/api/guardianAccount/getAccountDetails?email=" +
-        localStorage.getItem("wollof-auth")
-    )
+    Axios.get("/api/guardianAccount/getAccountDetails")
       .then((res) => setUser(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -91,19 +105,41 @@ const TrackingDashboard = () => {
     setDrawerOpen(open);
   };
 
-  const list = (anchor) => (
+  const list = () => (
     <div>
+      {user !== null && (
+        <div className="drawer-header">
+          <h3> {user.name} </h3>
+        </div>
+      )}
       <List>
         {drawers.map((item) => (
           <ListItem
             onClick={() => {
               setDrawerOpen(false);
+              if (item.label === "Logout") {
+                localStorage.removeItem("wollof-auth");
+                localStorage.removeItem("wollof-accountType");
+              }
               history.push(item.link);
             }}
+            selected={item.label.toLowerCase() === page}
+            classes={{ selected: classes.listItemActive }}
             button
           >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
+            <ListItemIcon
+              style={{
+                color:
+                  item.label.toLowerCase() === page &&
+                  theme.palette.common.blue,
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText
+              classes={{ primary: classes.listItem }}
+              primary={item.label}
+            />
           </ListItem>
         ))}
       </List>
@@ -129,11 +165,34 @@ const TrackingDashboard = () => {
           </Toolbar>
         </AppBar>
       </div>
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        classes={{ paper: classes.drawerWidth }}
+      >
         {list()}
       </Drawer>
-      {page === "search" && <Search details={user} />}
-      {page === "dashboard" && <Dashboard details={user} />}
+      <Snackbar
+        open={notification.show}
+        autoHideDuration={5000}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleNotificationClose}
+          severity={notification.severity}
+          variant="filled"
+        >
+          {notification.text}
+        </Alert>
+      </Snackbar>
+      {page === "search" && (
+        <Search details={user} setNotification={setNotification} />
+      )}
+      {page === "dashboard" && (
+        <Dashboard details={user} setNotification={setNotification} />
+      )}
     </>
   );
 };

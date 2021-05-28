@@ -1,0 +1,14 @@
+.empty-image {
+  height: 50px;
+}
+.empty-container {
+  text-align: center;
+  margin: 4rem;
+}
+.empty-container p {
+  margin: 0;
+  font-family: zilla slab;
+  margin-top: 0.5rem;
+  color: #061178;
+  font-weight: 600;
+}

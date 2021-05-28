@@ -1,0 +1,24 @@
+.drawer-header {
+  padding: 1rem;
+  padding-top: 2rem;
+  background-size: cover;
+  color: white;
+  background-image: url("https://static.vecteezy.com/system/resources/previews/000/621/684/non_2x/abstract-dark-blue-squares-pattern-background-subtle-lattice-luxury-style-trellis-repeat-geometric-grid-vector.jpg");
+  font-family: rajdhani;
+}
+.drawer-header h3 {
+  margin-bottom: 5px;
+}
+
+.drawer-header input {
+  background-color: inherit;
+  border: none;
+  color: white;
+  font-family: rajdhani;
+  width: 40px;
+}
+
+.drawer-header input:focus {
+  border: none;
+  outline: none;
+}

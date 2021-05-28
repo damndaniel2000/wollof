@@ -8,21 +8,30 @@ import {
   Typography,
 } from "@material-ui/core";
 
-const Guardians = () => {
+import Empty from "../../Empty/empty";
+
+const Guardians = ({ details }) => {
   const [guardians, setGuardians] = React.useState([]);
 
   React.useEffect(() => {
-    Axios.get(
-      "/api/trackingAccount/getGuardianList?email=" +
-        localStorage.getItem("wollof-auth")
-    )
+    if (details === null) return;
+    Axios.get("/api/trackingAccount/getGuardianList")
       .then((res) => setGuardians(res.data))
       .catch((err) => console.log(err));
   }, []);
 
+  const removeGuardian = (email) => {
+    Axios.post("/api/trackingAccount/removeGuardian", {
+      uniqueId: details.uniqueId,
+      email: email,
+    })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div>
-      {guardians.length !== 0 &&
+      {guardians.length !== 0 ? (
         guardians.map((item) => (
           <Card>
             <CardContent>
@@ -32,10 +41,15 @@ const Guardians = () => {
               <Typography color="textSecondary">{item.email}</Typography>
             </CardContent>
             <CardActions>
-              <Button size="small">Remove</Button>
+              <Button size="small" onClick={() => removeGuardian(item.email)}>
+                Remove
+              </Button>
             </CardActions>
           </Card>
-        ))}
+        ))
+      ) : (
+        <Empty text="No One To Watch Over You" />
+      )}
     </div>
   );
 };

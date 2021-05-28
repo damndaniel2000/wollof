@@ -56,7 +56,7 @@ const options = {
   zIndex: 0,
 };
 
-const Tracking = () => {
+const Tracking = ({ details }) => {
   const classes = useStyles();
 
   const [center, setCenter] = useState({
@@ -87,8 +87,6 @@ const Tracking = () => {
 
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = () => handleClose();
-
   const searchLocation = () => {
     Geocode.setApiKey("AIzaSyBLAI47V3CRFb-lwrRRpHLcVhVfx5uFebA");
     Geocode.fromAddress(mapInput.current.value).then((response) => {
@@ -112,10 +110,15 @@ const Tracking = () => {
     });
   };
 
-  const stopTracking = (polygon) => {
-    setSubprocess("null");
-    setProcess("null");
-    setGeofence([]);
+  const stopTracking = () => {
+    Axios.put("/api/trackingAccount/stopTracking?email=" + details.email).then(
+      () => {
+        handleClose();
+        setSubprocess("null");
+        setProcess("null");
+        setGeofence([]);
+      }
+    );
   };
 
   const checkIfInside = (e) => {
@@ -133,10 +136,18 @@ const Tracking = () => {
     );
     if (containsPlace === false) {
       Axios.post("/api/messages", {
-        to: "+9187794622",
-        body: "Stop STRESSING SO MUCH",
+        to: "+918779460422",
+        body: "I MISSS YOUUU AND UR CUTTEEE FACEEE",
       });
     }
+  };
+
+  const startTracking = () => {
+    setProcess("tracking");
+    Axios.put("/api/trackingAccount/currentLocation", {
+      email: localStorage.getItem("wollof-auth"),
+      currentLocation: center,
+    });
   };
 
   return (
@@ -222,7 +233,7 @@ const Tracking = () => {
                   size="small"
                   color="primary"
                   variant="contained"
-                  onClick={() => setProcess("tracking")}
+                  onClick={startTracking}
                 >
                   Confirm
                 </Button>
@@ -278,7 +289,7 @@ const Tracking = () => {
           <Button onClick={handleClose} color="primary">
             Back
           </Button>
-          <Button variant="outlined" onClick={handleSubmit} color="primary">
+          <Button variant="outlined" onClick={stopTracking} color="primary">
             Confirm
           </Button>
         </DialogActions>

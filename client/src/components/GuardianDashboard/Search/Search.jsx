@@ -18,7 +18,7 @@ import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles({});
 
-const Search = ({ details }) => {
+const Search = ({ details, setNotification }) => {
   const classes = useStyles();
   const [searchResult, setSearchResult] = React.useState(null);
 
@@ -41,7 +41,14 @@ const Search = ({ details }) => {
         dateOfRequest: new Date(),
       },
     })
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        setNotification({
+          show: true,
+          severity: "success",
+          text: "Request Sent",
+        });
+        setSearchResult(null);
+      })
       .catch((err) => console.log(err));
   };
 

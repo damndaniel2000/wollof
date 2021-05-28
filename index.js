@@ -6,11 +6,13 @@ const http = require("http");
 const MongoClient = require("mongoose");
 const client = require("twilio")(
   "AC5e133192bca3d06c06d84be6d7fe600d",
-  "306659c61eba123138cf803321fae9c0"
+  "1c72fecc73682aae4d82b8a640787998"
 );
+require("dotenv").config();
 
 const trackingRouter = require("./routes/trackingAccountRouter");
 const guardianRouter = require("./routes/guardianAccountRouter");
+const userRouter = require("./routes/userRouter");
 
 const app = express();
 const server = http.createServer(app);
@@ -18,18 +20,18 @@ const server = http.createServer(app);
 app.use(bodyParser.json());
 app.use(cors());
 
-MongoClient.connect(
-  "mongodb+srv://WeTrack:taranicole@wetrackcluster.gboms.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-  {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  }
-)
+//mongodb+srv://WeTrack:taranicole@wetrackcluster.gboms.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+MongoClient.connect("mongodb://localhost:27017/wollof", {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+})
   .then(() => console.log("Database connection successful"))
   .catch((err) => console.error("Error while connecting to database:", err));
 
 app.use("/api/trackingAccount", trackingRouter);
 app.use("/api/guardianAccount", guardianRouter);
+app.use("/api/user", userRouter);
 
 app.post("/api/messages", (req, res) => {
   res.header("Content-Type", "application/json");

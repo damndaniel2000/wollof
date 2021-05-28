@@ -1,9 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const auth = require("../middleware/auth");
 
 const GuardianAccount = require("../models/GuardianAccount");
 
 const guardianRouter = express.Router();
+
+const returnObjectId = (auth) => {
+  return jwt.verify(auth, process.env.JWT_SECRET).id;
+};
 
 guardianRouter.route("/signup").post((req, res, next) => {
   GuardianAccount.create(req.body)
@@ -13,28 +19,23 @@ guardianRouter.route("/signup").post((req, res, next) => {
     .catch((err) => next(err));
 });
 
-guardianRouter.route("/login").post((req, res, next) => {
-  GuardianAccount.findOne({ emailId: req.body.email })
+guardianRouter.route("/checkIfEmailIdExists").get((req, res, next) => {
+  GuardianAccount.findOne({ email: req.query.email })
     .then((data) => {
-      if (data === null) {
-        res.status(404);
-        res.send({ msg: "Email Not Found" });
-        return;
-      }
-      if (data.password === req.body.password) res.sendStatus(200);
-      else res.sendStatus(403);
+      if (data === null) res.json(false);
+      else res.json(true);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 });
 
 guardianRouter.route("/getAccountDetails").get((req, res, next) => {
-  GuardianAccount.findOne({ email: req.query.email })
+  GuardianAccount.findById(returnObjectId(req.header("Authorization")))
     .then((data) => res.json(data))
     .catch((err) => next(err));
 });
 
-guardianRouter.route("/getTrackingList").get((req, res, next) => {
-  GuardianAccount.findOne({ email: req.query.email })
+guardianRouter.route("/getTrackingList").get(auth, (req, res, next) => {
+  GuardianAccount.findById(returnObjectId(req.header("Authorization")))
     .then((data) => res.json(data.trackingList))
     .catch((err) => next(err));
 });

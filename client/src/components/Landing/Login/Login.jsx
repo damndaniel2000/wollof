@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Login = () => {
+const Login = ({ setNotification }) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -40,6 +40,13 @@ const Login = () => {
     setAccountType(event.target.value);
   };
 
+  React.useEffect(() => {
+    if (localStorage.getItem("wollof-auth") !== null)
+      history.push(
+        `/${localStorage.getItem("wollof-accountType")}?page=dashboard`
+      );
+  });
+
   const login = (e) => {
     e.preventDefault();
     const data = {
@@ -48,25 +55,22 @@ const Login = () => {
     };
 
     if (accountType === "tracking")
-      Axios.post("/api/trackingAccount/login", data)
+      Axios.post("/api/user/trackingLogin", data)
         .then((res) => {
-          if (res.status === 200) {
-            console.log(res);
-            localStorage.setItem("wollof-auth", email.current.value);
-            history.push("/tracking?page=dashboard");
-          }
+          localStorage.setItem("wollof-auth", res.data.token);
+          history.push("/tracking?page=dashboard");
         })
         .catch((err) => console.log(err));
 
     if (accountType === "guardian")
-      Axios.post("/api/guardianAccount/login", data)
+      Axios.post("/api/user/guardianLogin", data)
         .then((res) => {
-          if (res.status === 200) {
-            localStorage.setItem("wollof-auth", email.current.value);
-            history.push("/guardian?page=dashboard");
-          }
+          localStorage.setItem("wollof-auth", res.data.token);
+          history.push("/guardian?page=dashboard");
         })
-        .catch((err) => console.log(err));
+        .catch((err) =>
+          setNotification({ show: true, text: err.response.data.msg })
+        );
   };
 
   return (
@@ -129,7 +133,7 @@ const Login = () => {
           Sign In
         </Button>
       </form>
-      <p className="login-container-forgot"> Forgot Your Password ? </p>
+      {/*<p className="login-container-forgot"> Forgot Your Password ? </p>*/}
     </div>
   );
 };

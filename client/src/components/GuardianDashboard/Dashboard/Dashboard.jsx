@@ -16,13 +16,19 @@ const Requests = ({ details }) => {
   const [trackingId, setTrackingId] = useState("");
 
   React.useEffect(() => {
-    Axios.get(
-      "/api/guardianAccount/getTrackingList?email=" +
-        localStorage.getItem("wollof-auth")
-    )
+    Axios.get("/api/guardianAccount/getTrackingList?")
       .then((res) => setTracking(res.data))
       .catch((err) => console.log(err));
   }, []);
+
+  const removeTracking = (trackingId) => {
+    Axios.post("/api/trackingAccount/removeGuardian", {
+      trackingId: trackingId,
+      email: details.email,
+    })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <>
@@ -47,7 +53,12 @@ const Requests = ({ details }) => {
                   >
                     Track
                   </Button>
-                  <Button size="small">Remove</Button>
+                  <Button
+                    size="small"
+                    onClick={() => removeTracking(item.trackingId)}
+                  >
+                    Remove
+                  </Button>
                 </CardActions>
               </Card>
             ))}

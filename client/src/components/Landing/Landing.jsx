@@ -1,11 +1,7 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
-  TextField,
-  InputAdornment,
-  Button,
   Snackbar,
   makeStyles,
-  AppBar,
   Tab,
   Tabs,
   Box,
@@ -15,9 +11,6 @@ import { Alert } from "@material-ui/lab";
 import PropTypes from "prop-types";
 
 import "./Landing.css";
-
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import MailOutlineOutlinedIcon from "@material-ui/icons/MailOutlineOutlined";
 
 import Login from "./Login/Login";
 import Signup from "./SignUp/SignUp";
@@ -69,9 +62,6 @@ function a11yProps(index) {
 const Landing = () => {
   const classes = useStyles();
 
-  const email = useRef("");
-  const password = useRef("");
-
   const [notification, setNotification] = React.useState({
     show: false,
   });
@@ -96,21 +86,21 @@ const Landing = () => {
       </Tabs>
 
       <TabPanel value={value} index={0}>
-        <Login />
+        <Login setNotification={setNotification} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Signup />
+        <Signup setNotification={setNotification} />
       </TabPanel>
 
       <Snackbar
         open={notification.show}
         autoHideDuration={5000}
         onClose={handleNotificationClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={handleNotificationClose}
-          severity={notification.severity}
+          severity="error"
           variant="filled"
         >
           {notification.text}

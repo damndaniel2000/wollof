@@ -29,7 +29,7 @@ const useStyles = makeStyles({
   },
 });
 
-const SignUp = () => {
+const SignUp = ({ setNotification }) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -44,8 +44,36 @@ const SignUp = () => {
     setAccountType(event.target.value);
   };
 
+  const checkIfEmailIdExists = () => {
+    if (accountType === "tracking")
+      Axios.get(
+        "/api/trackingAccount/checkIfEmailIdExists?email=" + email.current.value
+      )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    if (accountType === "guardian")
+      Axios.get(
+        "/api/guardianAccount/checkIfEmailIdExists?email=" + email.current.value
+      )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+  };
+
   const signUp = (e) => {
     e.preventDefault();
+    if (phone.current.value.length !== 10) {
+      setNotification({
+        show: true,
+        text: "Please enter a valid phone number",
+      });
+      return;
+    }
+    checkIfEmailIdExists();
+    return;
     const data = {
       email: email.current.value,
       phone: phone.current.value,

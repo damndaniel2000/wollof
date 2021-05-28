@@ -39,19 +39,29 @@ const MapTrack = (props) => {
     )
       .then((res) =>
         setCurrentLocation({
-          lat: parseInt(res.data.coords.lat),
-          lng: parseInt(res.data.coords.lng),
+          lat: parseFloat(res.data.coords.lat),
+          lng: parseFloat(res.data.coords.lng),
         })
       )
       .catch((err) => console.log(err));
     Axios.get(
       "/api/TrackingAccount/currentGeoFence?trackingId=" + props.trackingId
     )
-      .then((res) => setCurrentGeofence(res.data.geofence))
+      .then((res) => {
+        let geofenceData = [];
+        res.data.geofence.forEach((item) => {
+          geofenceData.push({
+            lat: parseFloat(item.lat),
+            lng: parseFloat(item.lng),
+          });
+        });
+        setCurrentGeofence(geofenceData);
+      })
       .catch((err) => console.log(err));
   }, []);
   return (
     <>
+      {console.log(currentGeoFence)}
       <GoogleMap
         zoom={13}
         mapContainerStyle={{ height: "55vh", width: "100%" }}

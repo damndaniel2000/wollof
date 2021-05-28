@@ -10,14 +10,14 @@ import {
 
 import "./Requests.css";
 
+import Empty from "../../Empty/empty";
+
 const Requests = ({ details }) => {
   const [requests, setRequests] = React.useState([]);
 
   React.useEffect(() => {
-    Axios.get(
-      "/api/trackingAccount/getTrackingRequests?email=" +
-        localStorage.getItem("wollof-auth")
-    )
+    if (details === null) return;
+    Axios.get("/api/trackingAccount/getTrackingRequests")
       .then((res) => setRequests(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -31,9 +31,10 @@ const Requests = ({ details }) => {
       .catch((err) => console.log(err));
   };
 
-  const rejectRequest = () => {
+  const rejectRequest = (item) => {
     Axios.post("/api/trackingAccount/rejectTrackingRequest", {
-      email: localStorage.getItem("wollof-auth"),
+      uniqueId: details.uniqueId,
+      email: item.email,
     })
       .then((res) => console.log(res.data))
       .catch((err) => console.log(err));
@@ -41,7 +42,7 @@ const Requests = ({ details }) => {
 
   return (
     <div>
-      {requests.length !== 0 &&
+      {requests.length !== 0 ? (
         requests.map((item) => (
           <Card>
             <CardContent>
@@ -59,7 +60,10 @@ const Requests = ({ details }) => {
               </Button>
             </CardActions>
           </Card>
-        ))}
+        ))
+      ) : (
+        <Empty text="No Requests Found" />
+      )}
     </div>
   );
 };
