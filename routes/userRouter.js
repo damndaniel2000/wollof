@@ -16,7 +16,7 @@ router.post("/trackingLogin", async (req, res) => {
         .status(400)
         .json({ msg: "No account with this email has been registered." });
 
-    const isMatch = password === user.password;
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
@@ -59,7 +59,7 @@ router.post("/guardianLogin", async (req, res) => {
         .status(400)
         .json({ msg: "No account with this email has been registered." });
 
-    const isMatch = password === user.password;
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);

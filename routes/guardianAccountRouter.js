@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 
 const GuardianAccount = require("../models/GuardianAccount");
@@ -11,10 +12,17 @@ const returnObjectId = (auth) => {
   return jwt.verify(auth, process.env.JWT_SECRET).id;
 };
 
-guardianRouter.route("/signup").post((req, res, next) => {
-  GuardianAccount.create(req.body)
+guardianRouter.route("/signup").post(async (req, res, next) => {
+  const data = req.body;
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  data.password = hashedPassword;
+
+  GuardianAccount.create(data)
     .then((response) => {
-      res.json(response);
+      const userData = response;
+      const token = jwt.sign({ id: response._id }, process.env.JWT_SECRET);
+      data.token = token;
+      res.json(data);
     })
     .catch((err) => next(err));
 });

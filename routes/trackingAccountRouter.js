@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const randomstring = require("randomstring");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 
 const TrackingAccount = require("../models/TrackingAccount");
@@ -9,13 +10,19 @@ const GuardianAccount = require("../models/GuardianAccount");
 
 const trackingRouter = express.Router();
 
-trackingRouter.route("/signup").post((req, res, next) => {
+trackingRouter.route("/signup").post(async (req, res, next) => {
   const data = req.body;
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  data.password = hashedPassword;
+
   data["uniqueId"] = randomstring.generate(5);
   data["trackingId"] = randomstring.generate(8);
   TrackingAccount.create(data)
     .then((response) => {
-      res.json(response);
+      const userData = response;
+      const token = jwt.sign({ id: response._id }, process.env.JWT_SECRET);
+      data.token = token;
+      res.json(data);
     })
     .catch((err) => next(err));
 });

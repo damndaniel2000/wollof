@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 
 import MapTrack from "./MapTrack/MapTrack";
+import Empty from "../../Empty/empty";
 
 const Requests = ({ details }) => {
   const [tracking, setTracking] = useState([]);
@@ -34,7 +35,7 @@ const Requests = ({ details }) => {
     <>
       {!checkLocation && (
         <div>
-          {tracking.length !== 0 &&
+          {tracking.length !== 0 ? (
             tracking.map((item) => (
               <Card>
                 <CardContent>
@@ -61,7 +62,10 @@ const Requests = ({ details }) => {
                   </Button>
                 </CardActions>
               </Card>
-            ))}
+            ))
+          ) : (
+            <Empty text="Add Friends To Track Them Here" />
+          )}
         </div>
       )}
       {checkLocation && <MapTrack trackingId={trackingId} />}

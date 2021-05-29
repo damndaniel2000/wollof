@@ -40,12 +40,12 @@ const Login = ({ setNotification }) => {
     setAccountType(event.target.value);
   };
 
-  React.useEffect(() => {
-    if (localStorage.getItem("wollof-auth") !== null)
-      history.push(
-        `/${localStorage.getItem("wollof-accountType")}?page=dashboard`
-      );
-  });
+  // React.useEffect(() => {
+  //   if (localStorage.getItem("wollof-auth") !== null)
+  //     history.push(
+  //       `/${localStorage.getItem("wollof-accountType")}?page=dashboard`
+  //     );
+  // });
 
   const login = (e) => {
     e.preventDefault();
@@ -58,6 +58,7 @@ const Login = ({ setNotification }) => {
       Axios.post("/api/user/trackingLogin", data)
         .then((res) => {
           localStorage.setItem("wollof-auth", res.data.token);
+          localStorage.setItem("wollof-accountType", "tracking");
           history.push("/tracking?page=dashboard");
         })
         .catch((err) => console.log(err));
@@ -66,6 +67,7 @@ const Login = ({ setNotification }) => {
       Axios.post("/api/user/guardianLogin", data)
         .then((res) => {
           localStorage.setItem("wollof-auth", res.data.token);
+          localStorage.setItem("wollof-accountType", "guardian");
           history.push("/guardian?page=dashboard");
         })
         .catch((err) =>
