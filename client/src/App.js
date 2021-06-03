@@ -21,7 +21,7 @@ function App() {
 
   return (
     <LoadScript
-      googleMapsApiKey="AIzaSyBLAI47V3CRFb-lwrRRpHLcVhVfx5uFebA"
+      googleMapsApiKey=process.env.REACT_APP_GOOGLE_MAPS_API_KEY
       libraries={["places", "drawing"]}
     >
       <Router>

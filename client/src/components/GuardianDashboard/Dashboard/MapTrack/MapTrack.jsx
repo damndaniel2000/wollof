@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button, makeStyles } from "@material-ui/core";
 import Axios from "axios";
 import { GoogleMap, Marker, Polygon } from "@react-google-maps/api";
 
@@ -17,7 +18,26 @@ const options = {
   zIndex: 0,
 };
 
+const useStyles = makeStyles((theme) => ({
+  menuItem: {
+    maxWidth: 200,
+  },
+  divider: {
+    height: 28,
+    margin: 4,
+  },
+  navButtons: {
+    width: 100,
+  },
+  confirmButton: {
+    width: 200,
+    marginBottom: 10,
+  },
+}));
+
 const MapTrack = (props) => {
+  const classes = useStyles();
+
   const [currentLocation, setCurrentLocation] = useState(null);
   const [currentGeoFence, setCurrentGeofence] = useState(null);
 
@@ -48,6 +68,15 @@ const MapTrack = (props) => {
       "/api/TrackingAccount/currentGeoFence?trackingId=" + props.trackingId
     )
       .then((res) => {
+        if (!res.data.data.currentlyTracking) {
+          props.setNotification({
+            show: true,
+            severity: "error",
+            text: "Friend Currently Not Being Tracked",
+          });
+          props.setIsCheckingLocation(false);
+          return;
+        }
         let geofenceData = [];
         res.data.geofence.forEach((item) => {
           geofenceData.push({
@@ -61,7 +90,6 @@ const MapTrack = (props) => {
   }, []);
   return (
     <>
-      {console.log(currentGeoFence)}
       <GoogleMap
         zoom={13}
         mapContainerStyle={{ height: "55vh", width: "100%" }}
@@ -72,6 +100,17 @@ const MapTrack = (props) => {
         <Polygon paths={currentGeoFence} options={options} />
         <Marker icon={marker} position={currentLocation} />
       </GoogleMap>
+      <div style={{ textAlign: "center", marginTop: "3rem" }}>
+        <Button
+          className={classes.confirmButton}
+          size="small"
+          color="secondary"
+          variant="contained"
+          onClick={() => props.setIsCheckingLocation(false)}
+        >
+          Back
+        </Button>
+      </div>
     </>
   );
 };

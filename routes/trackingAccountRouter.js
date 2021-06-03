@@ -10,6 +10,10 @@ const GuardianAccount = require("../models/GuardianAccount");
 
 const trackingRouter = express.Router();
 
+const returnObjectId = (auth) => {
+  return jwt.verify(auth, process.env.JWT_SECRET).id;
+};
+
 trackingRouter.route("/signup").post(async (req, res, next) => {
   const data = req.body;
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -176,7 +180,7 @@ trackingRouter
   .route("/currentGeoFence")
   .get(auth, (req, res, next) => {
     TrackingAccount.findOne({ trackingId: req.query.trackingId })
-      .then((data) => res.json({ geofence: data.currentGeoFence }))
+      .then((data) => res.json({ data, geofence: data.currentGeoFence }))
       .catch((err) => next(err));
   })
   .put(auth, (req, res, next) =>
@@ -189,14 +193,14 @@ trackingRouter
   );
 
 trackingRouter.route("/removeGuardian").post(auth, (req, res, next) => {
-  TrackingAccount.findOne({ trackingId: req.body.trackingId })
+  TrackingAccount.findOne({ uniqueId: req.body.uniqueId })
     .then((trackerData) => {
       let guardians = trackerData.guardianList;
       const filteredGuardianList = guardians.filter(
         (item) => item.email !== req.body.email
       );
       TrackingAccount.updateOne(
-        { trackingId: req.body.trackingId },
+        { uniqueId: req.body.uniqueId },
         { $set: { guardianList: filteredGuardianList } }
       )
         .then((updateInfo) => {

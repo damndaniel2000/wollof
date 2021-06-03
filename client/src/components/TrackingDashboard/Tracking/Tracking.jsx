@@ -88,7 +88,7 @@ const Tracking = ({ details }) => {
   const handleClose = () => setOpen(false);
 
   const searchLocation = () => {
-    Geocode.setApiKey("AIzaSyBLAI47V3CRFb-lwrRRpHLcVhVfx5uFebA");
+    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
     Geocode.fromAddress(mapInput.current.value).then((response) => {
       const { lat, lng } = response.results[0].geometry.location;
       setCenter({ lat: lat, lng: lng });
@@ -137,7 +137,7 @@ const Tracking = ({ details }) => {
     if (containsPlace === false) {
       Axios.post("/api/messages", {
         to: "+918779460422",
-        body: "I MISSS YOUUU AND UR CUTTEEE FACEEE",
+        body: `${details.name} is outside fence.`,
       });
     }
   };
@@ -145,7 +145,7 @@ const Tracking = ({ details }) => {
   const startTracking = () => {
     setProcess("tracking");
     Axios.put("/api/trackingAccount/currentLocation", {
-      email: localStorage.getItem("wollof-auth"),
+      email: details.email,
       currentLocation: center,
     });
   };

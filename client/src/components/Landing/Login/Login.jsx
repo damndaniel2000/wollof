@@ -61,7 +61,9 @@ const Login = ({ setNotification }) => {
           localStorage.setItem("wollof-accountType", "tracking");
           history.push("/tracking?page=dashboard");
         })
-        .catch((err) => console.log(err));
+        .catch((err) =>
+          setNotification({ show: true, text: err.response.data.msg })
+        );
 
     if (accountType === "guardian")
       Axios.post("/api/user/guardianLogin", data)

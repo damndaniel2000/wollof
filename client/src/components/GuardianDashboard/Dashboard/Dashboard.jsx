@@ -11,23 +11,32 @@ import {
 import MapTrack from "./MapTrack/MapTrack";
 import Empty from "../../Empty/empty";
 
-const Requests = ({ details }) => {
+const Requests = ({ details, setNotification }) => {
   const [tracking, setTracking] = useState([]);
   const [checkLocation, setIsCheckingLocation] = useState(false);
   const [trackingId, setTrackingId] = useState("");
+
+  const [changeData, setChangeData] = useState(false);
 
   React.useEffect(() => {
     Axios.get("/api/guardianAccount/getTrackingList?")
       .then((res) => setTracking(res.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, [changeData]);
 
   const removeTracking = (trackingId) => {
     Axios.post("/api/trackingAccount/removeGuardian", {
       trackingId: trackingId,
       email: details.email,
     })
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        setNotification({
+          show: true,
+          severity: "success",
+          text: "Friend Removed",
+        });
+        setChangeData(true);
+      })
       .catch((err) => console.log(err));
   };
 
@@ -68,7 +77,13 @@ const Requests = ({ details }) => {
           )}
         </div>
       )}
-      {checkLocation && <MapTrack trackingId={trackingId} />}
+      {checkLocation && (
+        <MapTrack
+          trackingId={trackingId}
+          setIsCheckingLocation={setIsCheckingLocation}
+          setNotification={setNotification}
+        />
+      )}
     </>
   );
 };

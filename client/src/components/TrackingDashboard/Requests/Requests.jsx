@@ -12,22 +12,30 @@ import "./Requests.css";
 
 import Empty from "../../Empty/empty";
 
-const Requests = ({ details }) => {
+const Requests = ({ details, setNotification }) => {
   const [requests, setRequests] = React.useState([]);
+  const [changeData, setChangeData] = React.useState(false);
 
   React.useEffect(() => {
     if (details === null) return;
     Axios.get("/api/trackingAccount/getTrackingRequests")
       .then((res) => setRequests(res.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, [changeData]);
 
   const acceptRequest = (item) => {
     Axios.post("/api/trackingAccount/acceptTrackingRequest", {
       request: { email: item.email, name: item.name },
       uniqueId: details.uniqueId,
     })
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        setNotification({
+          show: true,
+          text: "Request Accepted",
+          severity: "success",
+        });
+        setChangeData(true);
+      })
       .catch((err) => console.log(err));
   };
 
@@ -36,7 +44,14 @@ const Requests = ({ details }) => {
       uniqueId: details.uniqueId,
       email: item.email,
     })
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        setNotification({
+          show: true,
+          text: "Request Rejected",
+          severity: "error",
+        });
+        setChangeData(true);
+      })
       .catch((err) => console.log(err));
   };
 

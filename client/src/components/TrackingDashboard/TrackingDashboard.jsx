@@ -11,7 +11,9 @@ import {
   ListItemIcon,
   ListItemText,
   useTheme,
+  Snackbar,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import { useHistory, useLocation } from "react-router";
 import Axios from "axios";
 
@@ -86,6 +88,12 @@ const TrackingDashboard = () => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  const [notification, setNotification] = useState({
+    show: false,
+  });
+
+  const handleNotificationClose = () => setNotification({ show: false });
 
   React.useEffect(() => {
     if (user === null) history.push("/tracking?page=dashboard");
@@ -187,9 +195,27 @@ const TrackingDashboard = () => {
       >
         {list()}
       </Drawer>
+      <Snackbar
+        open={notification.show}
+        autoHideDuration={5000}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleNotificationClose}
+          severity={notification.severity}
+          variant="filled"
+        >
+          {notification.text}
+        </Alert>
+      </Snackbar>
       {page === "dashboard" && <Dashboard details={user} />}
-      {page === "requests" && <Requests details={user} />}
-      {page === "guardians" && <Guardians details={user} />}
+      {page === "requests" && (
+        <Requests details={user} setNotification={setNotification} />
+      )}
+      {page === "guardians" && (
+        <Guardians details={user} setNotification={setNotification} />
+      )}
     </>
   );
 };

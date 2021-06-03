@@ -76,7 +76,7 @@ const SignUp = ({ setNotification }) => {
   // };
 
   const sendOtp = () => {
-    if (phone.current.value.length < 10) {
+    if (phone.current.value.length !== 10) {
       setNotification({ show: true, text: "Enter A Valid Phone Number" });
       return;
     }

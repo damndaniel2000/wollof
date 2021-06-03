@@ -10,22 +10,30 @@ import {
 
 import Empty from "../../Empty/empty";
 
-const Guardians = ({ details }) => {
+const Guardians = ({ details, setNotification }) => {
   const [guardians, setGuardians] = React.useState([]);
+  const [changeData, setChangeData] = React.useState(false);
 
   React.useEffect(() => {
     if (details === null) return;
     Axios.get("/api/trackingAccount/getGuardianList")
       .then((res) => setGuardians(res.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, [changeData]);
 
   const removeGuardian = (email) => {
     Axios.post("/api/trackingAccount/removeGuardian", {
       uniqueId: details.uniqueId,
       email: email,
     })
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        setNotification({
+          show: true,
+          severity: "success",
+          text: "Guardian Removed",
+        });
+        setChangeData(true);
+      })
       .catch((err) => console.log(err));
   };
 
