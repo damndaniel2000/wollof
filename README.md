@@ -20,6 +20,7 @@ Open the cloned directory and run `npm install` in root directory and also in th
 You will need :
  - A mongoDB set up locally or on Atlas and substitue the URI of it in server.js file instead of the local link in the code.
  - A Firebase account with the mobile auth feature enabled to use it for OTP service. Substitute your firebase details in the client/src/firebase.js file.
+ - A Google Maps API key for the map functionality to work.
  - A Twilio account setup to send SMSes.
 
 ### > How To Use
